@@ -23,8 +23,11 @@
     "predeploy": "medusa db:migrate"
   },
   "dependencies": {
+    "@aws-sdk/client-sts": "^3.699.0",
     "@medusajs/admin-sdk": "latest",
     "@medusajs/cli": "latest",
+    "@medusajs/file-local": "^2.1.0",
+    "@medusajs/file-s3": "^2.1.0",
     "@medusajs/framework": "latest",
     "@medusajs/medusa": "latest",
     "@mikro-orm/core": "5.9.7",
@@ -34,21 +37,26 @@
     "awilix": "^8.0.1",
     "medusa-file-r2": "^0.0.2",
     "pg": "^8.13.0",
-    "resend": "^4.0.1"
+    "resend": "^4.0.1",
+    "sass": "^1.82.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@medusajs/test-utils": "latest",
     "@mikro-orm/cli": "5.9.7",
     "@swc/core": "1.5.7",
     "@swc/jest": "^0.2.36",
+    "@types/babel__core": "^7.20.5",
+    "@types/ioredis": "^5.0.0",
     "@types/jest": "^29.5.13",
     "@types/node": "^20.0.0",
+    "@types/pg": "^8.11.10",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.25",
     "jest": "^29.7.0",
     "prop-types": "^15.8.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2",
     "vite": "^5.2.11"

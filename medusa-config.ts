@@ -35,13 +35,19 @@ const modules = {
     options: {
       providers: [
         {
-          resolve: "medusa-file-r2",
+          resolve: '@medusajs/file-s3',
           options: {
-            account_id: process.env.R2_ACCOUNT_ID,
-            access_key: process.env.R2_ACCESS_KEY,
-            secret_key: process.env.R2_SECRET_KEY,
             bucket: process.env.R2_BUCKET_NAME,
-            public_url: process.env.R2_PUBLIC_URL,
+            region: 'auto', // for R2
+            endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+            credentials: {
+              accessKeyId: process.env.R2_ACCESS_KEY,
+              secretAccessKey: process.env.R2_SECRET_KEY,
+            },
+            // If you want files to be publicly accessible
+            aws_config_options: {
+              signatureVersion: 'v4',
+            },
           },
         },
       ],
