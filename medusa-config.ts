@@ -31,22 +31,21 @@ if (isStripeConfigured) {
 
 const modules = {
   [Modules.FILE]: {
-    resolve: '@medusajs/medusa/file',
+    resolve: "@medusajs/medusa/file",
     options: {
       providers: [
         {
-          resolve: '@medusajs/file-s3',
+          resolve: "@medusajs/medusa/file-s3",
+          id: "s3",
           options: {
-            bucket: process.env.R2_BUCKET_NAME,
-            region: 'auto', // for R2
-            endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-            credentials: {
-              accessKeyId: process.env.R2_ACCESS_KEY,
-              secretAccessKey: process.env.R2_SECRET_KEY,
-            },
-            // If you want files to be publicly accessible
-            aws_config_options: {
-              signatureVersion: 'v4',
+            file_url: process.env.S3_FILE_URL,
+            access_key_id: process.env.S3_ACCESS_KEY_ID,
+            secret_access_key: process.env.S3_SECRET_ACCESS_KEY,
+            region: process.env.S3_REGION,
+            bucket: process.env.S3_BUCKET,
+            endpoint: process.env.S3_ENDPOINT,
+            additional_client_config: {
+              forcePathStyle: true,
             },
           },
         },
