@@ -38,14 +38,14 @@ const modules = {
           resolve: "@medusajs/medusa/file-s3",
           id: "s3",
           options: {
-            file_url: process.env.S3_FILE_URL,
+            endpoint: "http://bucket.railway.internal:9000", // Base MinIO server URL
+            file_url: "http://bucket.railway.internal:9000/medusa", // URL with bucket
             access_key_id: process.env.S3_ACCESS_KEY_ID,
             secret_access_key: process.env.S3_SECRET_ACCESS_KEY,
-            region: process.env.S3_REGION,
-            bucket: process.env.S3_BUCKET,
-            endpoint: process.env.S3_ENDPOINT,
+            bucket: "medusa",
+            region: "us-east-1",
             additional_client_config: {
-              forcePathStyle: true,
+              forcePathStyle: true, // Required for MinIO as per docs
             },
           },
         },
