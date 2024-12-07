@@ -1,6 +1,5 @@
 import { ProviderSendNotificationDTO } from '@medusajs/types';
 import { AbstractNotificationProviderService, MedusaError } from '@medusajs/utils';
-
 import { Resend } from 'resend';
 
 import { validateModuleOptions } from '../../utils/validate-module-options';
@@ -13,17 +12,18 @@ type ModuleOptions = {
   replyToEmail: string;
   toEmail: string;
   enableEmails: string;
+  channels?: string[];
 };
 
 export enum ResendNotificationTemplates {
   ORDER_PLACED = 'order-placed',
-  RESET_PASSWORD = 'reset-password'
+  RESET_PASSWORD = 'reset-password',
+  FEED = 'feed'
 }
 
 class ResendNotificationProviderService extends AbstractNotificationProviderService {
   private resend: Resend;
   private options: ModuleOptions;
-
   static identifier = 'resend-notification';
 
   constructor(container, options: ModuleOptions) {
@@ -31,7 +31,10 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
     validateModuleOptions(options, 'resendNotificationProvider');
 
     this.resend = new Resend(options.apiKey);
-    this.options = options;
+    this.options = {
+      ...options,
+      channels: [...(options.channels || ['email']), 'feed'] // Ensure feed channel is included
+    };
   }
 
   // Send mail
@@ -55,6 +58,16 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
     return data!;
   }
 
+  // Handle feed notifications
+  private async handleFeed(notification: ProviderSendNotificationDTO) {
+    // For now, just acknowledge the feed notification
+    return {
+      to: notification.to || this.options.toEmail,
+      status: 'success',
+      data: notification.data
+    };
+  }
+
   // Send order placed mail
   private async sendOrderPlacedMail(notification: ProviderSendNotificationDTO) {
     const orderData = { order: notification?.data };
@@ -67,7 +80,7 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
     );
   }
 
-    // Send reset password mail
+  // Send reset password mail
   private async sendResetPasswordMail(notification: ProviderSendNotificationDTO) {
     const url = notification?.data?.url as string;
     const dynamicSubject = notification?.data?.subject as string;
@@ -79,18 +92,39 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
     );
   }
 
+  async sendNotification(
+    event: string,
+    data: unknown,
+    attachmentGenerator: unknown
+  ) {
+    // Handle feed channel notifications
+    if (event.includes('feed')) {
+      return await this.handleFeed({
+        to: this.options.toEmail,
+        data,
+        template: ResendNotificationTemplates.FEED.toString()
+      });
+    }
+
+    return await super.sendNotification(event, data, attachmentGenerator);
+  }
+
   async send(notification: ProviderSendNotificationDTO) {
+    // Handle feed notifications
+    if (notification.template === ResendNotificationTemplates.FEED.toString()) {
+      return await this.handleFeed(notification);
+    }
+
     switch (notification.template) {
       case ResendNotificationTemplates.ORDER_PLACED.toString():
         return await this.sendOrderPlacedMail(notification);
 
-       case ResendNotificationTemplates.RESET_PASSWORD.toString():
+      case ResendNotificationTemplates.RESET_PASSWORD.toString():
         return await this.sendResetPasswordMail(notification);
     }
 
     return {};
   }
-
 }
 
 export default ResendNotificationProviderService;
